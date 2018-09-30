@@ -1,0 +1,70 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 300px;
+  min-height: 350px;
+}
+
+h2 {
+  font-size: 110%;
+  margin: 0;
+}
+
+x-views > * > header {
+  padding: 0.7em 1em 0.75em;
+  border-bottom: 1px solid #000;
+  background: var(--dark-header);
+  color: #fff; 
+}
+
+x-views > * > footer {
+  padding: 0.5em 0.75em 0.5em;
+  background-color: #f6f6f6;
+  border-top: 1px solid #ccc;
+  color: #000;
+  text-align: center;
+}
+
+x-views > * > h3 {
+  margin: 0;
+  padding: 0.4em 0.6em 0.5em;
+  border-top: 1px solid #616c7e;
+  border-bottom: 1px solid #1b212a;
+  background: var(--dark-title);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+
+
+#default_view > header {
+  text-align: center;
+}
+
+#default_view > header button {
+  margin: 1.5em 0;
+  padding: 0.8em 1.5em 0.7em;
+}
+
+#default_view > ul {
+  position: relative;
+  background: #eee;
+}
+
+#default_view > ul:empty:before {
+  content: "No activity to display";
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 100%;
+  text-align: center;
+  color: #aaa;
+  transform: translateY(-50%);
+}
+
+#did_list_view {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

@@ -1,0 +1,274 @@
+
+:root {
+  --sidebar-bk: #333;
+  --hero-bk: #bbbbbb;
+  --profile-bk: #0077d7;
+  --titles: #005ba5;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 300px;
+  min-height: 350px;
+  background: var(--grey-bk);
+}
+
+h2 {
+  font-size: 150%;
+  margin: 0;
+}
+
+x-views {
+  position: absolute;
+  top: 0;
+  left: 15em;;
+  right: 0;
+  width: auto;
+  min-height: 100%;
+}
+
+x-views > * > footer {
+  padding: 0.5em 0.75em 0.5em;
+  background-color: #f6f6f6;
+  border-top: 1px solid #ccc;
+  color: #000;
+  text-align: center;
+}
+
+x-views > * > h3 {
+  margin: 0;
+  padding: 0.4em 0.6em 0.5em;
+  background-color: #f6f6f6;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #ddd;
+  color: #004085;
+}
+
+x-view-menu {
+  color: #fff;
+  fill: #fff;
+}
+
+x-view-menu > * {
+  position: relative;
+}
+
+x-view-menu > [view] {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+x-view-menu > [view]:last-child {
+  border-bottom: none;
+}
+
+x-view-menu > [view] > * {
+  vertical-align: middle;
+  opacity: 0.4;
+  transition: opacity 0.35s ease;
+}
+
+x-view-menu > [view]:not([selected]):hover > * {
+  opacity: 0.7;
+}
+
+x-view-menu > [selected] > * {
+  opacity: 1;
+}
+
+x-view-menu > [selected]:after {
+  content: " ";
+  position: absolute;
+  top: 20%;
+  left: 0;
+  height: 60%;
+  width: 0.3em;
+  background: var(--active-ui);
+}
+
+x-view-menu svg,
+x-view-menu img {
+  max-width: 100%;
+}
+
+x-view-menu svg {
+  height: 1.75em;
+  width: 2em;
+  margin: 0 0.25em;
+  vertical-align: bottom;
+  pointer-events: none;
+}
+
+[fit="spread"] {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+#logo {
+  position: relative;
+  height: 4.5em;
+  padding: 0;
+  background: var(--active-ui);
+  box-shadow: 0 0px 2px 1px rgba(0,0,0,0.75);
+}
+
+  #logo img {
+    position: absolute;
+    width: 62%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+#global_header {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 15em;
+  right: 0;
+  height: 4.5em;
+  padding: 0 0 0 1.1em;
+  color: #004085;
+  background-color: #fff;
+  border-bottom: 1px solid #cacaca;
+  box-shadow: 0 1px 2px -1px rgba(0,0,0,0.125);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+#global_header menu,
+#global_header menu li {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  align-items: center;
+}
+
+#global_header menu li {
+  padding: 0 1.25em;
+}
+
+#global_sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 15em;
+  transition: transform 0.5s ease;
+  background: var(--sidebar-bk);
+  z-index: 1;
+  transform: translate3d(-100%, 0, 0);
+}
+
+body[loaded] #global_sidebar {
+  transform: translate3d(0%, 0, 0);
+}
+
+#global_sidebar nav > * {
+  display: block;
+  padding: 0.75em 1.15em;
+  font-size: 120%;
+  text-decoration: none;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.75);
+}
+
+#global_sidebar x-view-menu span {
+  font-size: 130%;
+}
+
+#global_sidebar x-view-menu > a:first-child {
+  border-top: none;
+}
+
+/* ALL VIEWS */
+
+@keyframes spin {
+  from {transform: rotate(0deg)}
+  to {transform: rotate(360deg)}
+}
+
+#view_spinner {
+  background: rgba(255,255,255,0.5);
+}
+
+#view_spinner svg {
+  height: 45px;
+  width: 45px;
+  padding: 1px;
+  background: #fff;
+  border-radius: 40px;
+  animation: spin 0.75s linear infinite;
+}
+
+/* PROFILE VIEW */
+
+#hero_box {
+  position: relative;
+  box-sizing: border-box;
+  height: 20em;
+  margin: 0.5em 0.5em 0;
+  overflow: hidden;
+}
+
+#hero_box > * {
+  position: relative;
+}
+
+#hero_image {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#hero_gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, var(--sidebar-bk) 0%, transparent);
+}
+
+#profile_image {
+  box-sizing: border-box;
+  height: 10em;
+  width: 10em;
+  margin: 2.5em auto 1em;
+  background: #fff;
+  border: 0.3em solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px 0px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+#profile_name {
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* Attestation View */
+
+#attestation_blocks > div {
+  display: inline-block;
+  margin: 3em 0 0 3em;
+  text-align: center;
+}
+
+#attestation_blocks dt {
+  font-weight: bold;
+}
+
+#attestation_blocks dd {
+  padding: 0;
+  margin: 0;
+}
+
+#attestation_blocks img {
+  width: 15em;
+}

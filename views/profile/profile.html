@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Profile</title>
+        <link rel="stylesheet" href="/components/components.css"/>
+        <link rel="stylesheet" href="/global/css/global.css"/>
+        <link rel="stylesheet" href="profile.css"/>
+      </head>
+    
+    <body>
+    
+    <svg id="svg">
+      <defs>
+        <symbol id="home" viewBox="10 -6 12 40">
+          <path fill="inherit" d="M32 18.451l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </symbol>
+        <symbol id="person" width="768" height="768" viewBox="0 0 768 768">
+          <path fill="inherit" d="M384 448.5c85.5 0 256.5 42 256.5 127.5v64.5h-513v-64.5c0-85.5 171-127.5 256.5-127.5zM384 384c-70.5 0-127.5-57-127.5-127.5s57-129 127.5-129 127.5 58.5 127.5 129-57 127.5-127.5 127.5z"></path>
+        </symbol>
+        <symbol id="paper_airplane" viewBox="6 -2 15 28">
+          <path fill="inherit" d="M10.781 14.274l-0.781 7.726 4.77-5.893 4.564 2.060 4.666-16.167-13.219 12.274zM24 2l-24 9.865 5.666 1.135 4.334 9-3.125-9 17.125-11z"></path>
+        </symbol>
+        <symbol id="list" width="768" height="768" viewBox="0 0 768 768">
+          <path fill="inherit" d="M223.5 160.5h448.5v63h-448.5v-63zM223.5 415.5v-63h448.5v63h-448.5zM223.5 607.5v-63h448.5v63h-448.5zM127.5 528c27 0 48 22.5 48 48s-22.5 48-48 48-48-22.5-48-48 21-48 48-48zM127.5 144c27 0 48 21 48 48s-21 48-48 48-48-21-48-48 21-48 48-48zM127.5 336c27 0 48 21 48 48s-21 48-48 48-48-21-48-48 21-48 48-48z"></path>
+        </symbol>
+        <symbol id="add_person" width="1em" height="1em" viewBox="0 0 24 24">
+          <path fill="inherit" d="M15 14.016c2.672 0 8.016 1.313 8.016 3.984v2.016h-16.031v-2.016c0-2.672 5.344-3.984 8.016-3.984zM6 9.984h3v2.016h-3v3h-2.016v-3h-3v-2.016h3v-3h2.016v3zM15 12c-2.203 0-3.984-1.781-3.984-3.984s1.781-4.031 3.984-4.031 3.984 1.828 3.984 4.031-1.781 3.984-3.984 3.984z"></path>
+        </symbol>
+        <symbol id="search" width="1em" height="1em" viewBox="0 0 24 24">
+          <path fill="inherit" d="M9.516 14.016c2.484 0 4.5-2.016 4.5-4.5s-2.016-4.5-4.5-4.5-4.5 2.016-4.5 4.5 2.016 4.5 4.5 4.5zM15.516 14.016l4.969 4.969-1.5 1.5-4.969-4.969v-0.797l-0.281-0.281c-1.125 0.984-2.625 1.547-4.219 1.547-3.609 0-6.516-2.859-6.516-6.469s2.906-6.516 6.516-6.516 6.469 2.906 6.469 6.516c0 1.594-0.563 3.094-1.547 4.219l0.281 0.281h0.797z"></path>
+        </symbol>
+        <symbol id="photos" viewBox="0 0 512 512">
+          <path fill="inherit" d="M368,224c26.5,0,48-21.5,48-48c0-26.5-21.5-48-48-48c-26.5,0-48,21.5-48,48C320,202.5,341.5,224,368,224z"/>
+          <path fill="inherit" d="M452,64H60c-15.6,0-28,12.7-28,28.3v327.4c0,15.6,12.4,28.3,28,28.3h392c15.6,0,28-12.7,28-28.3V92.3   C480,76.7,467.6,64,452,64z M348.9,261.7c-3-3.5-7.6-6.2-12.8-6.2c-5.1,0-8.7,2.4-12.8,5.7l-18.7,15.8c-3.9,2.8-7,4.7-11.5,4.7   c-4.3,0-8.2-1.6-11-4.1c-1-0.9-2.8-2.6-4.3-4.1L224,215.3c-4-4.6-10-7.5-16.7-7.5c-6.7,0-12.9,3.3-16.8,7.8L64,368.2V107.7   c1-6.8,6.3-11.7,13.1-11.7h357.7c6.9,0,12.5,5.1,12.9,12l0.3,260.4L348.9,261.7z"/>
+        </symbol>
+        <symbol id="social" viewBox="0 0 64 64">
+          <g transform="translate(78.000000, 528.000000)"><path class="st0" d="M-22-495.6c0-3.2-2.5-4.9-6-4.9h-10.1c0.7-2.7,1.1-5.3,1.1-7.5c0-8.7-2.4-10.5-4.5-10.5     c-1.4,0-2.4,0.1-3.8,1c-0.4,0.2-0.6,0.6-0.7,1l-1.5,8.1c-1.6,4.3-5.7,8-9,10.5v21.4c1.1,0,2.5,0.6,3.8,1.3     c1.6,0.8,3.3,1.6,5.2,1.6h14.3c3,0,5.2-2.4,5.2-4.5c0-0.4,0-0.8-0.1-1.1c1.9-0.7,3.1-2.3,3.1-4.1c0-0.9-0.2-1.7-0.5-2.3     c1.1-0.8,2.3-2.1,2.3-3.7c0-0.8-0.4-1.8-1-2.5C-22.9-492.8-22-494.2-22-495.6L-22-495.6z M-25.1-495.6c0,1.9-2,2.1-2.3,3     c-0.3,1,1.2,1.4,1.2,3.2c0,1.9-2.3,1.9-2.6,2.8c-0.4,1.1,0.7,1.5,0.7,3.3c0,0.1,0,0.2,0,0.3c-0.3,1.5-2.6,1.6-3,2.2     c-0.4,0.7,0.1,1.1,0.1,2.7c0,0.9-1,1.5-2.2,1.5h-14.3c-1.1,0-2.5-0.6-3.8-1.3c-1.2-0.6-2.4-1.2-3.7-1.5v-15.9     c3.7-2.8,8.5-7.1,10.4-12.3c0-0.1,0-0.2,0.1-0.2l1.4-7.5c0.5-0.2,0.9-0.2,1.7-0.2c0.3,0,1.5,1.8,1.5,7.5c0,2.2-0.4,4.7-1.2,7.5     h-0.4c-0.8,0-1.5,0.7-1.5,1.5c0,0.8,0.7,1.5,1.5,1.5H-28C-26.5-497.5-25.1-496.8-25.1-495.6L-25.1-495.6z" id="Fill-4_2_"/><path class="st0" d="M-58-473.5h-9c-1.7,0-3-1.3-3-3v-21c0-1.7,1.3-3,3-3h9c1.7,0,3,1.3,3,3v21     C-55-474.8-56.3-473.5-58-473.5L-58-473.5z M-67-497.5v21h9l0-21H-67L-67-497.5z M-70-518.5"/></g>
+        </symbol>
+        <symbol id="spinner" viewBox="0 0 32 32">
+          <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM16 8c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8zM25.546 25.546c-2.55 2.55-5.94 3.954-9.546 3.954s-6.996-1.404-9.546-3.954-3.954-5.94-3.954-9.546c0-3.606 1.404-6.996 3.954-9.546l2.121 2.121c0 0 0 0 0 0-4.094 4.094-4.094 10.755 0 14.849 1.983 1.983 4.62 3.075 7.425 3.075s5.441-1.092 7.425-3.075c4.094-4.094 4.094-10.755 0-14.849l2.121-2.121c2.55 2.55 3.954 5.94 3.954 9.546s-1.404 6.996-3.954 9.546z"></path>
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- <header id="global_header">
+      <img class="profile-image" fit="spread" />
+      <h2>Alice Smith</h2>
+      <menu>
+        <li type="button">
+          <svg><use xlink:href="#search"></use></svg>
+        </li>
+      </menu>
+    </header> -->
+
+    <aside id="global_sidebar">
+
+      <div id="hero_box">
+        <img id="hero_image" fit="spread" />
+        <div id="hero_gradient"></div>
+        <div id="profile_image">
+          <img class="profile-image" fit="spread" />
+        </div>
+        <h1 id="profile_name"></h1>
+      </div>
+
+      <x-view-menu for="main_views">
+          <a view="dashboard" selected>
+            <svg><use xlink:href="#home"></use></svg>
+            <span>Home</span>
+          </a>
+          <a view="photos">
+              <svg><use xlink:href="#photos"></use></svg>
+              <span>Photos</span>
+          </a>
+          <a view="social">
+              <svg><use xlink:href="#social"></use></svg>
+              <span>Social</span>
+          </a>
+          <a view="attestations">
+              <svg><use xlink:href="#list"></use></svg>
+              <span>Attestations</span>
+          </a>
+        </x-view-menu>
+
+    </aside>
+
+    <x-views id="main_views" view="dashboard">
+    
+      <section id="dashboard">
+        
+      </section>
+
+
+      <section id="attestations"><div id="attestation_blocks" list="blocks"></div></section>
+    
+    </x-views>
+
+    <x-modal id="view_spinner" active>
+      <svg><use xlink:href="#spinner"></use></svg>
+    </x-modal>
+    
+    <x-notifier id="notifier"></x-notifier>
+
+  <img id="profile_photo" />
+  <h1 id="display_name"></h1>
+</body>
+
+<script src="/global/js/url-search-params.js"></script>
+<script src="/global/js/browser-polyfill.js"></script>
+<script src="/global/js/did-polyfills.js"></script>
+<script src="/global/js/avatar.js"></script>
+<script src="/global/js/setup.js"></script>
+<script src="/components/x-tag-polyfilled.js"></script>
+<script src="/components/components.js"></script>
+<script src="/global/js/vibrant.min.js"></script>
+<script src="/global/js/vibrant.worker.min.js"></script>
+<script src="profile.js"></script>
+
+</html>

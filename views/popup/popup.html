@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/components/components.css"/>
+    <link rel="stylesheet" href="/global/css/global.css"/>
+    <link rel="stylesheet" href="popup.css"/>
+  </head>
+
+<body>
+  
+<x-views view="default_view">
+
+  <section id="default_view">
+    <header noflex>
+      <a href="/views/dashboard/dashboard.html" target="_blank"><button type="button" styled>Open DID Manager</button></a>
+    </header>
+    <h3 noflex>Recent Activity</h3>
+    <ul id="recent_activity_list"></ul>
+  </section>
+
+  <section id="did_picker">
+    <header>
+      <h2>Choose a DID for this activity</h2>
+    </header>
+    <ul id="did_list"></ul>
+    <footer>
+      <button type="button" styled>Select</button>
+    </footer>
+  </section>
+
+  <section id="attestation_actions">
+    <button type="button">Yes</button>
+    <button type="button">No</button>
+  </section>
+
+  <section id="settings">
+    <header>
+      <h2>Choose a DID for this activity</h2>
+    </header>
+    <dl>
+      <dt>General Settings</dt>
+      <dd id="general_settings"></dd>
+      <dt>DID-Specific Settings</dt>
+      <dd id="did_settings"></dd>
+    </dl>
+  </section>
+
+</x-views>
+
+  <script src="/global/js/url-search-params.js"></script>
+  <script src="/global/js/browser-polyfill.js"></script>
+  <script src="/global/js/avatar.js"></script>
+  <script src="/global/js/setup.js"></script>
+  <script src="/components/x-tag-polyfilled.js"></script>
+  <script src="/components/components.js"></script>
+  <script src="popup.js"></script>
+
+</body>
+
+</html>

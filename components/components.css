@@ -1,0 +1,135 @@
+
+
+x-views {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  contain: content;
+}
+
+x-views > * {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+x-views > * > *:not(header):not(footer):not([noflex]) {
+  flex-grow: 1;
+}
+
+x-views > * > ul,
+x-views > * > ol,
+x-views > * > dl {
+  margin: 0;
+  padding: 0;
+}
+
+x-views > *[view-active] {
+  z-index: 1;
+  opacity: 1;
+}
+
+x-views > * > header {
+  display: flex;
+  flex-flow: row;
+}
+
+x-views > * > header > * {
+  flex-grow: 1;
+  margin: auto;
+}
+
+x-views > * > header > *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+  flex-grow: 0;
+}
+
+/*** x-view-menu ***/
+
+x-view-menu {
+
+}
+
+x-view-menu > * {
+  display: block;
+  padding: 1em;
+}
+
+x-view-menu > [view] {
+  cursor: pointer;
+}
+
+/*** x-modal ***/
+
+x-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.4s ease, z-index 0.4s ease;
+  contain: content;
+}
+
+x-modal[active] {
+  opacity: 1;
+  z-index: 1000;
+  transition: opacity 0.4s ease;
+}
+
+x-modal > section {
+  background: #fff;
+}
+
+x-modal header,
+x-modal footer {
+  padding: 1em;
+}
+
+x-notifier {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  contain: content;
+}
+
+x-notifier > figure {
+  margin: 0.5em;
+  padding: 1em;
+  background: #fff;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.4s ease-out;
+}
+
+x-notifier > figure[showing] {
+  opacity: 1;
+}
+
+x-notifier > figure > header {
+  font-weight: bold;
+}
+
+x-notifier > figure > p {
+  margin: 0.5em 0 0;
+}
+
+x-notifier > figure > p:empty {
+  margin: 0;
+}

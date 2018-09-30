@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>DID User Agent</title>
+    <link rel="stylesheet" href="/components/components.css"/>
+    <link rel="stylesheet" href="/global/css/global.css"/>
+    <link rel="stylesheet" href="dashboard.css"/>
+  </head>
+
+<body>
+
+<svg id="svg">
+  <defs>
+    <symbol id="home" viewBox="10 -6 12 40">
+      <path fill="inherit" d="M32 18.451l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+    </symbol>
+    <symbol id="person" width="768" height="768" viewBox="0 0 768 768">
+      <path fill="inherit" d="M384 448.5c85.5 0 256.5 42 256.5 127.5v64.5h-513v-64.5c0-85.5 171-127.5 256.5-127.5zM384 384c-70.5 0-127.5-57-127.5-127.5s57-129 127.5-129 127.5 58.5 127.5 129-57 127.5-127.5 127.5z"></path>
+    </symbol>
+    <symbol id="paper_airplane" viewBox="6 -2 15 28">
+      <path fill="inherit" d="M10.781 14.274l-0.781 7.726 4.77-5.893 4.564 2.060 4.666-16.167-13.219 12.274zM24 2l-24 9.865 5.666 1.135 4.334 9-3.125-9 17.125-11z"></path>
+    </symbol>
+    <symbol id="list" width="768" height="768" viewBox="0 0 768 768">
+      <path fill="inherit" d="M223.5 160.5h448.5v63h-448.5v-63zM223.5 415.5v-63h448.5v63h-448.5zM223.5 607.5v-63h448.5v63h-448.5zM127.5 528c27 0 48 22.5 48 48s-22.5 48-48 48-48-22.5-48-48 21-48 48-48zM127.5 144c27 0 48 21 48 48s-21 48-48 48-48-21-48-48 21-48 48-48zM127.5 336c27 0 48 21 48 48s-21 48-48 48-48-21-48-48 21-48 48-48z"></path>
+    </symbol>
+    <symbol id="add_person" width="1em" height="1em" viewBox="0 0 24 24">
+      <path fill="inherit" d="M15 14.016c2.672 0 8.016 1.313 8.016 3.984v2.016h-16.031v-2.016c0-2.672 5.344-3.984 8.016-3.984zM6 9.984h3v2.016h-3v3h-2.016v-3h-3v-2.016h3v-3h2.016v3zM15 12c-2.203 0-3.984-1.781-3.984-3.984s1.781-4.031 3.984-4.031 3.984 1.828 3.984 4.031-1.781 3.984-3.984 3.984z"></path>
+    </symbol>
+    <symbol id="sign" viewBox="0 0 32 32">
+      <path fill="inherit" d="M10.681 18.207l-2.209 5.67 5.572-2.307-3.363-3.363zM26.855 6.097l-0.707-0.707c-0.78-0.781-2.047-0.781-2.828 0l-1.414 1.414 3.535 3.536 1.414-1.414c0.782-0.781 0.782-2.048 0-2.829zM10.793 17.918l0.506-0.506 3.535 3.535 9.9-9.9-3.535-3.535 0.707-0.708-11.113 11.114zM23.004 26.004l-17.026 0.006 0.003-17.026 11.921-0.004 1.868-1.98h-14.805c-0.552 0-1 0.447-1 1v19c0 0.553 0.448 1 1 1h19c0.553 0 1-0.447 1-1v-14.058l-2.015 1.977 0.054 11.085z"></path>
+    </symbol>
+  </defs>
+</svg>
+  
+<x-view-menu for="main_views">
+  <a id="logo">
+    <img src="/global/images/user-icon.svg" />
+  </a>
+  <a view="dashboard" selected>
+    <svg><use xlink:href="#home"></use></svg>
+  </a>
+  <a view="actions">
+      <svg><use xlink:href="#paper_airplane"></use></svg>
+  </a>
+  <a view="user_dids">
+      <svg><use xlink:href="#list"></use></svg>
+  </a>
+  <a view="sign">
+    <svg><use xlink:href="#sign"></use></svg>
+</a>
+</x-view-menu>
+
+<x-views id="main_views" view="profile">
+
+  <section id="dashboard">
+    <header>
+      <h2>Identity Dashboard</h2>
+    </header>
+    <div>
+      <ul id="dashboard_counts" list="blocks" flex="center">
+        <li>
+          <span>0</span>
+          <div>Notifications</div>
+        </li>
+        <li>
+          <span did-count></span>
+          <div>Primary IDs</div>
+        </li>
+        <li>
+          <span>1</span>
+          <div>Devices</div>
+        </li>
+      </ul>
+      <h3 noflex>Recent Activity</h3>
+      <ul id="recent_activity_list" list="zebra"></ul>
+    </div>
+  </section>
+
+  <section id="user_dids">
+    <header>
+      <h2>My DIDs</h2>
+      <menu>
+        <li class="add-dids" type="button">
+          <svg><use xlink:href="#add_person"></use></svg>
+        </li>
+      </menu>
+    </header>
+    <ul id="did_list"></ul>
+  </section>
+
+  <section id="actions">
+    <header>
+      <h2>Messages &amp; Actions</h2>
+    </header>
+    <ul>
+    </ul>
+  </section>
+
+  <section id="sign">
+    <header>
+      <h2>Sign &amp; Validate</h2>
+    </header>
+    <dl>
+      <dt>General Settings</dt>
+      <dd id="general_settings"></dd>
+      <dt>DID-Specific Settings</dt>
+      <dd id="did_settings"></dd>
+    </dl>
+  </section>
+
+  <section id="settings">
+    <header>
+      <h2>Choose a DID for this activity</h2>
+    </header>
+    <dl>
+      <dt>General Settings</dt>
+      <dd id="general_settings"></dd>
+      <dt>DID-Specific Settings</dt>
+      <dd id="did_settings"></dd>
+    </dl>
+  </section>
+
+</x-views>
+
+<x-modal id="add_dids" hide="outertap">
+  <section>
+    <header>
+      <h3>Scan or Enter DID</h3>
+    </header>
+    <div id="did_scanner">
+      <video id="qr_video" autoplay></video>
+    </div>
+    <footer>
+      <button>Scan QR</button>
+      <button>Manual Entry</button>
+    </footer>
+  </section>
+</x-modal>
+
+<x-notifier id="notifier"></x-notifier>
+
+  <script src="/global/js/url-search-params.js"></script>
+  <script src="/global/js/browser-polyfill.js"></script>
+  <script src="/global/js/avatar.js"></script>
+  <script src="/global/js/setup.js"></script>
+  <script src="/components/x-tag-polyfilled.js"></script>
+  <script src="/components/components.js"></script>
+  <script src="js/qr.js"></script>
+  <script src="dashboard.js"></script>
+
+</body>
+
+</html>

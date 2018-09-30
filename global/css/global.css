@@ -1,0 +1,101 @@
+
+
+:root {
+  --dark-bk: #2b333e;
+  --grey-bk: #e1e2e3;
+  --dark-header: #343c48;
+  --dark-title: #4f5967;
+  --active-ui: #0077d7;
+  font-size: calc(0.8em + 0.4vmin);
+}
+
+h3 {
+  margin: 0;
+}
+
+button[styled], [type="button"][styled] {
+  display: inline-block;
+  padding: 0.4em 0.75em 0.35em;
+  color: #fff;
+  background: var(--active-ui);
+  border: none;
+  border-radius: 0.2em;
+  box-shadow: 0 -2px 1px -1px rgba(0,0,0,0.5) inset;
+  cursor: pointer;
+}
+
+x-views > * > header {
+  padding: 0.7em 0 0.75em;
+  border-bottom: 1px solid #000;
+  background: var(--dark-bk);
+  color: #fff; 
+}
+
+x-views > * > header > menu > * {
+  cursor: pointer;
+}
+
+x-views > * > header svg {
+  display: block;
+  width: 2em;
+  height: 2em;
+}
+
+x-modal header {
+  color: #fff;
+  background: #004085;
+}
+
+x-modal footer {
+  background: var(--grey-bk);
+}
+
+x-modal > section {
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.3);
+}
+
+[flex] {
+  display: flex;
+}
+
+[flex~="center"] {
+  align-items: center;
+  justify-content: center;
+}
+
+[list] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[list] > * {
+  cursor: default;
+}
+
+[list~="blocks"] > * {
+  margin: 1em;
+  padding: 1em 1.1em;
+  background: #f9f9f9;
+  box-shadow: 0 1px 2px -1px rgba(0,0,0,0.4);
+}
+
+[list~="zebra"] > * {
+  display: flex;
+  align-items: center;
+  padding: 1em 1.1em;
+  background: #eee;
+  border-bottom: 1px solid #ccc;
+}
+
+[list~="zebra"] > *:nth-child(even) {
+  background: #f9f9f9;
+}
+
+[did-count]:before {
+  content: attr(did-count);
+}
+
+#svg {
+  display: none;
+}
