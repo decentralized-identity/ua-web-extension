@@ -6,7 +6,7 @@
 xtag.create('x-views', class extends XTagElement {
   set 'view::attr' (id){
     Array.from(this.children).forEach(view => view.removeAttribute('view-active'));
-    var select = document.getElementById(id);
+    var select = this.querySelector('#'+ id);
     if (select) {
       select.setAttribute('view-active', '');
       xtag.fireEvent(select, 'viewchange', { detail: id });
