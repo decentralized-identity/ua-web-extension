@@ -15,14 +15,14 @@
     "gulp-uglify-es": "^0.1.11"
   },
   "dependencies": {
-    "koa": "2.5.1",
-    "koa-body": "2.5.0",
-    "koa-mount": "3.0.0",
-    "koa-router": "7.4.0",
-    "koa-static": "4.0.2",
+    "koa": "2.5.3",
+    "koa-body": "~4.0.4",
+    "koa-mount": "~4.0.0",
+    "koa-router": "~7.4.0",
+    "koa-static": "~5.0.0",
     "natives": "^1.1.5",
     "node-vibrant": "^3.0.0",
-    "url-search-params": "^0.10.0",
+    "url-search-params": "^0.10.2",
     "webextension-polyfill": "^0.2.1",
     "x-tag": "^2.0.9-alpha"
   },
