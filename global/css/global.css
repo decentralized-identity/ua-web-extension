@@ -5,12 +5,19 @@
   --grey-bk: #e1e2e3;
   --dark-header: #343c48;
   --dark-title: #4f5967;
+  --inactive-ui: #004085;
   --active-ui: #0077d7;
   font-size: calc(0.8em + 0.4vmin);
 }
 
 h3 {
   margin: 0;
+}
+
+svg {
+  height: 1em;
+  width: 1em;
+  vertical-align: middle;
 }
 
 button[styled], [type="button"][styled] {
@@ -39,6 +46,20 @@ x-views > * > header svg {
   display: block;
   width: 2em;
   height: 2em;
+}
+
+x-action-button {
+  background: var(--inactive-ui);
+  color: #fff;
+  fill: #fff;
+}
+x-action-button:active {
+  background: var(--active-ui);
+}
+
+x-modal section {
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 x-modal header {

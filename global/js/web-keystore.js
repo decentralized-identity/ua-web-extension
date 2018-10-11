@@ -1,5 +1,8 @@
 (function(){
 
+
+// Some of the code below was informed by a Gist published by Saul Shanabrook (GH: @saulshanabrook)
+
 // async function encryptDataSaveKey() {
 // 	var data = await makeData();
 // 	console.log("generated data", data);
@@ -40,95 +43,115 @@ function hex(buffer) {
     var paddedValue = (padding + stringValue).slice(-padding.length);
     hexCodes.push(paddedValue);
   }
-  return hexCodes.join("");
+  return hexCodes.join('');
 }
 
-async function storageOperation(fn, pubKey) {
-
+function storageOperation(fn) {
 	var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
-	// Open/create the database
-	var open = indexedDB.open("keyStore", 1);
-
-	// Setup Object Store
-	open.onupgradeneeded = () => {
-    var store = open.result.createObjectStore("keyStoreOjects", {autoIncrement: true});
-    store.createIndex("publicKey", "publicKey", { unique: true });
-  }
-
-	open.onsuccess = async function() {
-	    var db = open.result;
-	    var tx = db.transaction("keyStoreOjects", "readwrite");
+	var init = indexedDB.open("keyStore", 1);
+  return new Promise((resolve, reject) => {
+    init.onerror = e => reject(e);
+    init.onupgradeneeded = () => {
+      var store = init.result.createObjectStore("keyStoreOjects", {keyPath: 'hash'});
+      store.createIndex("did", "did", { unique: false });
+    }
+    init.onsuccess = async () => {
+      var db = init.result;
+      var tx = db.transaction("keyStoreOjects", "readwrite");
       var store = tx.objectStore("keyStoreOjects");
       tx.oncomplete = () => db.close();
-      await fn(store);
-	}
+      try {
+        await fn(store);
+        resolve();
+      }
+      catch (e) { reject(e) }
+    }
+  })
+}
+
+function save(entry) { return storageOperation(async store => await store.put(entry)) }
+function _delete(entry) { return storageOperation(async store => await store.delete(entry)) }
+
+function encrypt(data, keys) {
+  return window.crypto.subtle.encrypt(
+    {
+      name: keys.publicKey.algorithm.name,
+        //label: Uint8Array([...]) // optional
+    },
+    keys.publicKey, // from generateKey or importKey above
+    data // ArrayBuffer of data you want to encrypt
+  )
+}
+async function decrypt(data, keys) {
+  return new Uint8Array(await window.crypto.subtle.decrypt(
+      {
+        name: keys.publicKey.algorithm.name,
+        //label: Uint8Array([...]) // optional
+      },
+      keys.privateKey, // from generateKey or importKey above
+      data // ArrayBuffer of the data
+  ));
+}
+
+async function generate(did = null, desc = {
+        name: "RSA-OAEP",
+        modulusLength: 2048, //can be 1024, 2048, or 4096
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+        hash: {name: "SHA-256"}, //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
+      }) {
+
+  var keys = await window.crypto.subtle.generateKey(
+    desc,
+    false, //whether the key is extractable (i.e. can be used in exportKey)
+    ["encrypt", "decrypt"] //must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
+  )
+  var hash = await crypto.subtle.exportKey('jwk', keys.publicKey).then(async jwk => await sha256(JSON.stringify(jwk)));
+  var entry = {
+    did: did,
+    hash: hash,
+    keys: keys
+  };
+  try { await save(entry) }
+  catch (e) { throw e }
+  return entry;
 }
 
 keyStore = {
-  generate: async function makeKeys(desc = {
-      name: "RSA-OAEP",
-      modulusLength: 2048, //can be 1024, 2048, or 4096
-      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: {name: "SHA-256"}, //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
-    }) {
-
-    var keys = await window.crypto.subtle.generateKey(
-      desc,
-      false, //whether the key is extractable (i.e. can be used in exportKey)
-      ["encrypt", "decrypt"] //must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
-    )
-
-    await storageOperation(async function (store) {
-      //console.log()
-      store.add(keys);
-    });
-    
-    return keys;
+  generate: generate,
+  save: save,
+  delete: _delete,
+  encrypt: encrypt,
+  decrypt: decrypt,
+  load: jwkHash => {
+    return new Promise((resolve, reject) => {
+      storageOperation(store => {
+        var txn = store.get(jwkHash);
+        txn.onerror = (e) => reject(e);
+        txn.onsuccess = () => resolve(txn.result);
+      })
+    })
   },
-  load: async function loadKeys(pubKey) {
-    await storageOperation(async (store) => {
-      var keys;
-      var txn = store.get(pubKey);
-      txn.onsuccess = async () => await Promise.result(keys = txn.result.keys);
-      return keys;
-    });
-  },
-  forEach: async function forEach(fn) {
-    await storageOperation(async (store) => {
-      store.openCursor().onsuccess = async function(event) {
-        var cursor = event.target.result;
-        if (cursor) {
-          fn(cursor.value);
-          cursor.continue();
+  forEach: async fn => {
+    return new Promise((resolve, reject) => {
+      storageOperation(store => {
+        var returned = [];
+        var cursor = store.openCursor()
+        cursor.onsuccess = event => {
+          var cursor = event.target.result;
+          if (cursor) {
+            var output = fn(cursor.value);
+            if (typeof output != 'undefined') returned.push(output);
+            cursor.continue();
+          }
+          else resolve(returned);
         }
-        else await Promise.result(event);
-      };
-    });  
+        cursor.onerror = e => reject(e);
+      }); 
+    }); 
   },
-  store: function storeKeys(keys) { return storageOperation(async (store) => store.put(keys)) },
-  delete: function deleteKeys(keys) { return storageOperation(async (store) => store.delete(keys)) },
-  encrypt: function encrypt(data, keys) {
-    return window.crypto.subtle.encrypt(
-      {
-          name: "RSA-OAEP",
-          //label: Uint8Array([...]) //optional
-      },
-      keys.publicKey, //from generateKey or importKey above
-      data //ArrayBuffer of data you want to encrypt
-    )
-  },
-  decrypt: async function decrypt(data, keys) {
-    return new Uint8Array(await window.crypto.subtle.decrypt(
-        {
-          name: "RSA-OAEP",
-          //label: Uint8Array([...]) //optional
-        },
-        keys.privateKey, //from generateKey or importKey above
-        data //ArrayBuffer of the data
-    ));
-  }
+  didKeys: did => keyStore.forEach(obj => {
+    if (obj.did === did) return obj;
+  })
 }
 
 })();
-

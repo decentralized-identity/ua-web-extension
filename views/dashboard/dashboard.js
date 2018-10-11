@@ -4,7 +4,23 @@
 (function(){
 
 
-/* DID Input */
+/* ACTIONS */
+
+document.addEventListener('action', e => {
+  switch (e.detail) {
+    case 'new_did':
+      console.log(e);
+      create_did.show();
+      break;
+  }
+});
+
+/* VIEW: My DIDs */
+
+
+
+
+/* DID Import (QR Code, etc.) */
 
 var imageTrack;
 var imageCapture;
@@ -57,7 +73,7 @@ function getCamImage(fn) {
     }
   }
   
-  add_dids.addEventListener('modalshow', () => {
+  import_dids.addEventListener('modalshow', () => {
     activateCam(qr_video).then(() => {
       timer = setInterval(() => {
         getCamImage(dataURL => {
@@ -72,15 +88,29 @@ function getCamImage(fn) {
 
   });
 
-  add_dids.addEventListener('modalhide', () => {
+  import_dids.addEventListener('modalhide', () => {
     imageTrack.stop();
     clearInterval(timer);
   });
 
-  xtag.addEvent(document, 'click:delegate(.add-dids)', function(event){
-    add_dids.show();
+  xtag.addEvent(document, 'click:delegate(.import-dids)', function(event){
+    import_dids.show();
   })
 
+/* MODALS */
+
+create_did.addEventListener('submit', e => {
+  e.preventDefault();
+  console.log(e);
+  var op = DIDOperationManager.generate({ op: 'create', method: e.target.elements.did_method.value });
+  op.send().then(res => {
+    notifier.show('DID Created!', { body: res.did });
+  }).catch(e => {
+    notifier.show('DID creation failed', { type: 'error', body: e.toString() })
+  });
+});
+
+/* Data-Reactive Elements */
 
 var DIDCountAttr = 'did-count';
 updateDIDCount = function(){

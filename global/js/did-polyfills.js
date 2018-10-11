@@ -21,42 +21,160 @@
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join(''); // convert to hex
     }
+
+    function storageOperation(name, fn) {
+      var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+      var init = indexedDB.open(name, 1);
+      return new Promise((resolve, reject) => {
+        init.onerror = e => reject(e);
+        init.onupgradeneeded = () => init.result.createObjectStore('entries', {keyPath: 'id'});
+        init.onsuccess = async () => {
+          var db = init.result;
+          var tx = db.transaction('entries', "readwrite");
+          var store = tx.objectStore('entries');
+          tx.oncomplete = () => db.close();
+          try {
+            await fn(store);
+            resolve();
+          }
+          catch (e) { reject(e) }
+        }
+      })
+    }
+
+  /* DID Registry & Operations */
+
+    const RESOLVER_ENDPOINT = 'http://localhost:3000/1.0/identifiers/';
+
+    class DIDResult {
+      constructor (did, src){
+        this.did = did;
+        this.resolverData = src;
+        this.document = src.didDocument;
+        this.services = {};
+        if (this.document.service) {
+          // Spec technically allows for an object, which this normalizes
+          (Array.isArray(this.document.service) ? this.document.service : [this.document.service]).forEach(s => {
+            (this.services[s.type] || (this.services[s.type] = [])).push(s);
+          });
+        }
+      }
+    };
+
+    const regexDIDMethod = /^did:(\w+):/;
+    
+    class DIDOperation {
+      constructor (props){
+        this.id = props.id || uuid();
+        this.op = props.op;
+        this.did = props.did;
+        this.data = props.data;
+        this.sent = props.sent;
+        this.method = (props.method || this.did.match(regexDIDMethod)[1]).trim().toLowerCase();
+        var spec = navigator.did.methods[this.method];
+        if (!spec) throw `There is no matching entry for the '${this.method}' DID Method prefix`;
+        DIDOperationManager.store(this);
+      }
+      async send (retry) {
+        if (!this.sent || retry) {
+          var fn = navigator.did.methods[this.method][this.op];
+          if (!fn) throw `The DID Method '${this.method}' does not support the '${this.op}' operation`;
+          this.sent = true;
+          DIDOperationManager.store(this);
+          return fn(this.data).then(res => {
+            this.response = res;
+            DIDOperationManager.store(this);
+            return res;
+          }).catch(e => {
+            this.error = e;
+            DIDOperationManager.store(this);
+            return e;
+          });
+        }
+      }
+    };
+
+    const DIDOperationManager = window.DIDOperationManager = {
+      generate(props = { op: '', method: '', data: {} }){
+        var instance = new DIDOperation(props);
+        this.store(instance);
+        return instance;
+      },
+      async get (instance){
+        await storageOperation('DIDOperations', store => store.get(instance.id || instance));
+      },
+      async getAll (){
+        return new Promise(resolve => {
+          var ops = [];
+          storageOperation('DIDOperations', store => store.openCursor().onsuccess = event => {
+            var cursor = event.target.result;
+            if (cursor) {
+              ops.push(cursor.value);
+              cursor.continue();
+            }
+            else resolve(ops);
+          });
+        });
+      },
+      store (instance){
+        storageOperation('DIDOperations', store => store.put(instance));
+      },
+      delete (instance){
+        storageOperation('DIDOperations', store => store.delete(instance.id || instance));
+      }
+    };
   
   /* Navigator.prototype.did */
   
     if (!navigator.did) {
-    
-      const RESOLVER_ENDPOINT = 'http://localhost:3000/1.0/identifiers/';
-  
-      class DIDResult {
-        constructor (did, src){
-          this.did = did;
-          this.resolverData = src;
-          this.document = src.didDocument;
-          this.services = {};
-          if (this.document.service) {
-            // Spec technically allows for an object, which this normalizes
-            (Array.isArray(this.document.service) ? this.document.service : [this.document.service]).forEach(s => {
-              (this.services[s.type] || (this.services[s.type] = [])).push(s);
-            });
-          }
-        }
-      }
   
       Navigator.prototype.did = {
+        methods: {
+          'test': {
+            resolve (did) {
+              return fetch('beta.discovery.did.microsoft.com/api/1.0/read/' + did, {
+                mode: 'cors',
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                  "Content-Type": "application/json"
+                }
+              }).then(res => res.json())
+            },
+            create (doc){
+              return fetch('https://beta.register.did.microsoft.com/api/v1.0', {
+                mode: 'cors',
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(doc || {
+                  "didMethod": "test",
+                  "publicKey": {
+                      "id": "testKey",
+                      "type": "RsaVerificationKey2018",
+                      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAaEFAAOCAQ8AMIIBCgKCAQEA1TYycomln2c8dh8XkcWs\ncSlo0DvwoGerrYeBMibWO+0XSjyQ/8bSJYKKWVIFvFud353hLJujzCnauwOfD74l\nK4xIBf58F/m7L2r5LhNU/MM+6xAlpcPSmbZlQ6CS3MMXwSm1ZcuRMeBGrGV5NooX\nNa/YzRBGoxPJtC4rWf0mlIAgk868yNoeJoN6fLSu678AkThCvZx7AdHi/5bkAquU\nBOgjGUid7hmfyR595RpJuOgv1dLfN2BEYWnMswZJ3KJ6OXn6MASG2voUavwn7Xmw\ncDtTy8e2lmkilTZuEiuFyQfvvPEHK1/3aCHETkezd1gkINpFumRozg6bN3UnBHju\n9wIDAQAB\n-----END PUBLIC KEY-----"
+                  },
+                  "hubUri": "https://beta.hub.microsoft.com/"
+                })
+              }).then(res => res.json())
+            }
+          }
+        },
         async lookup (did){
           return fetch(RESOLVER_ENDPOINT + did)
             .then(response => response.json())
             .then(json => result = new DIDResult(did, json))
             .catch(e => console.log(e));
         },
-        async requestIdentifier (){
+        async requestDID (){
           var did = (prompt('Please enter a DID') || '').trim()
           if (did.match('did:')) return did;
           throw 'No DID provided';
         }
-      }
-      console.log(navigator.did);
+      };
+
     }
   
   /* IdentityHub Classes */

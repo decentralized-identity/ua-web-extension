@@ -64,6 +64,7 @@ x-view-menu img {
 }
 
 x-view-menu svg {
+  width: auto;
   height: 2.25em;
   vertical-align: bottom;
   pointer-events: none;
@@ -191,4 +192,8 @@ x-views > * > h3 {
 
 #did_scanner video {
   width: 100%;
+}
+
+#create_did form {
+  padding: 1em;
 }

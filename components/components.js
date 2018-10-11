@@ -33,6 +33,13 @@ xtag.create('x-view-menu', class extends XTagElement {
   }
 });
 
+xtag.create('x-action-button', class extends XTagElement {
+  get 'action::attr' (){}
+  'click::event' (e){
+    if (this.action) xtag.fireEvent(this, 'action', {detail: this.action });
+  }
+});
+
 xtag.create('x-modal', class extends XTagElement {
   set 'active::attr(boolean)' (val){
     if (val) {
@@ -65,6 +72,7 @@ xtag.create('x-notifier', class extends XTagElement {
   show (title, obj = {}){
     var notice = document.createElement('figure');
     if (obj.duration !== false) notice.setAttribute('duration', obj.duration || 3000);
+    if (obj.type !== false) notice.setAttribute('type', obj.type);
     if (obj.hide) notice.setAttribute('hide', obj.hide);
     notice.innerHTML = `<header>${title}</header><p>${obj.body || ''}</p>`;
     this.appendChild(notice);
