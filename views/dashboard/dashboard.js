@@ -20,7 +20,7 @@ document.addEventListener('action', e => {
 
 
 
-/* DID Import (QR Code, etc.) */
+/* MODAL: Import DID (QR Code, etc.) */
 
 var imageTrack;
 var imageCapture;
@@ -97,14 +97,32 @@ function getCamImage(fn) {
     import_dids.show();
   })
 
-/* MODALS */
+/* MODAL: Create DID */
 
-create_did.addEventListener('submit', e => {
+create_did.addEventListener('submit', async e => {
   e.preventDefault();
-  console.log(e);
-  var op = DIDOperationManager.generate({ op: 'create', method: e.target.elements.did_method.value });
+  var keys = await keyStore.generate();
+  var op = DIDOperationManager.generate({
+    op: 'create',
+    method: e.target.elements.did_method.value,
+    data: {
+      "didMethod": "test",
+      "publicKey": {
+          "id": "testKey",
+          "type": "RsaVerificationKey2018",
+          "publicKeyJwk": keys.jwk
+        },
+      "hubUri": "https://beta.hub.microsoft.com/"
+    }
+  });
   op.send().then(res => {
+    new DID({
+      id: res.did,
+      meta: { display_name: e.target.elements.display_name.value  }
+    });
     notifier.show('DID Created!', { body: res.did });
+    renderDIDChange();
+
   }).catch(e => {
     notifier.show('DID creation failed', { type: 'error', body: e.toString() })
   });
@@ -113,22 +131,22 @@ create_did.addEventListener('submit', e => {
 /* Data-Reactive Elements */
 
 var DIDCountAttr = 'did-count';
-updateDIDCount = function(){
-  var count = User.didCount = Object.keys(User.dids).length;
+updateDIDCount = async function(){
+  var count = await DIDManager.count();
   var nodes = document.querySelectorAll('[' + DIDCountAttr + ']');
   for (let node of nodes) node.setAttribute(DIDCountAttr, count);
 }
 
-function renderDIDChange(){
+async function renderDIDChange(){
   /* Dashboard */
 
   updateDIDCount();
   /* DID List */
 
   var content = '';
-  for (let did in User.dids) {
-    content += `<li><svg data-jdenticon-value="${did}"><svg/><span>${did}</span><div delete-did="${did}">⨯</div></li>`;
-  }
+  await DIDManager.forEach(did => {
+    content += `<li><svg data-jdenticon-value="${did.id}"><svg/><span>${did.meta.display_name || did.id}</span><div delete-did="${did.id}">⨯</div></li>`;
+  })
   did_list.innerHTML = content;
   jdenticon.update('#did_list [data-jdenticon-value]');
 }

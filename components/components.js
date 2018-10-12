@@ -33,7 +33,7 @@ xtag.create('x-view-menu', class extends XTagElement {
   }
 });
 
-xtag.create('x-action-button', class extends XTagElement {
+xtag.create('x-action', class extends XTagElement {
   get 'action::attr' (){}
   'click::event' (e){
     if (this.action) xtag.fireEvent(this, 'action', {detail: this.action });

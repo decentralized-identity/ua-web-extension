@@ -44,9 +44,9 @@
   <a view="dashboard" selected>
     <svg><use xlink:href="#home"></use></svg>
   </a>
-  <a view="actions">
+  <!-- <a view="actions">
       <svg><use xlink:href="#paper_airplane"></use></svg>
-  </a>
+  </a> -->
   <a view="user_dids">
       <svg><use xlink:href="#list"></use></svg>
   </a>
@@ -69,7 +69,7 @@
         </li>
         <li>
           <span did-count></span>
-          <div>Primary IDs</div>
+          <div>DIDs</div>
         </li>
         <li>
           <span>1</span>
@@ -91,16 +91,16 @@
       </menu>
     </header>
     <ul id="did_list"></ul>
-    <x-action-button action="new_did"><svg><use xlink:href="#add_person"></use></svg></x-action-button>
+    <x-action type="button" action="new_did"><svg><use xlink:href="#add_person"></use></svg></x-action>
   </section>
 
-  <section id="actions">
+  <!-- <section id="actions">
     <header>
       <h2>Messages &amp; Actions</h2>
     </header>
     <ul>
     </ul>
-  </section>
+  </section> -->
 
   <section id="sign">
     <header>
@@ -166,6 +166,7 @@
 
   <script src="/global/js/url-search-params.js"></script>
   <script src="/global/js/browser-polyfill.js"></script>
+  <script src="/global/js/web-keystore.js"></script>
   <script src="/global/js/did-polyfills.js"></script>
   <script src="/global/js/avatar.js"></script>
   <script src="/global/js/setup.js"></script>

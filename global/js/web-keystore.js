@@ -1,4 +1,4 @@
-(function(){
+(function(global){
 
 
 // Some of the code below was informed by a Gist published by Saul Shanabrook (GH: @saulshanabrook)
@@ -52,13 +52,13 @@ function storageOperation(fn) {
   return new Promise((resolve, reject) => {
     init.onerror = e => reject(e);
     init.onupgradeneeded = () => {
-      var store = init.result.createObjectStore("keyStoreOjects", {keyPath: 'hash'});
-      store.createIndex("did", "did", { unique: false });
+      var store = init.result.createObjectStore('entries', {keyPath: 'hash'});
+      store.createIndex('entries', 'entries', { unique: false });
     }
     init.onsuccess = async () => {
       var db = init.result;
-      var tx = db.transaction("keyStoreOjects", "readwrite");
-      var store = tx.objectStore("keyStoreOjects");
+      var tx = db.transaction('entries', "readwrite");
+      var store = tx.objectStore('entries');
       tx.oncomplete = () => db.close();
       try {
         await fn(store);
@@ -93,7 +93,7 @@ async function decrypt(data, keys) {
   ));
 }
 
-async function generate(did = null, desc = {
+async function generate(desc = {
         name: "RSA-OAEP",
         modulusLength: 2048, //can be 1024, 2048, or 4096
         publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
@@ -105,9 +105,13 @@ async function generate(did = null, desc = {
     false, //whether the key is extractable (i.e. can be used in exportKey)
     ["encrypt", "decrypt"] //must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
   )
-  var hash = await crypto.subtle.exportKey('jwk', keys.publicKey).then(async jwk => await sha256(JSON.stringify(jwk)));
+  var jwk;
+  var hash = await crypto.subtle.exportKey('jwk', keys.publicKey).then(async exp => {
+    jwk = exp;
+    return await sha256(JSON.stringify(exp));
+  });
   var entry = {
-    did: did,
+    jwk: jwk,
     hash: hash,
     keys: keys
   };
@@ -116,7 +120,7 @@ async function generate(did = null, desc = {
   return entry;
 }
 
-keyStore = {
+global.keyStore = {
   generate: generate,
   save: save,
   delete: _delete,
@@ -148,10 +152,7 @@ keyStore = {
         cursor.onerror = e => reject(e);
       }); 
     }); 
-  },
-  didKeys: did => keyStore.forEach(obj => {
-    if (obj.did === did) return obj;
-  })
+  }
 }
 
-})();
+})(window === undefined ? this : window);

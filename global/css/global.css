@@ -48,12 +48,13 @@ x-views > * > header svg {
   height: 2em;
 }
 
-x-action-button {
+x-action[type="button"] {
   background: var(--inactive-ui);
   color: #fff;
   fill: #fff;
+  box-shadow: 0 1px 1px 1px rgba(0,0,0,0.35);
 }
-x-action-button:active {
+x-action[type="button"]:active {
   background: var(--active-ui);
 }
 

@@ -44,24 +44,7 @@
 
   /* DID Registry & Operations */
 
-    const RESOLVER_ENDPOINT = 'http://localhost:3000/1.0/identifiers/';
-
-    class DIDResult {
-      constructor (did, src){
-        this.did = did;
-        this.resolverData = src;
-        this.document = src.didDocument;
-        this.services = {};
-        if (this.document.service) {
-          // Spec technically allows for an object, which this normalizes
-          (Array.isArray(this.document.service) ? this.document.service : [this.document.service]).forEach(s => {
-            (this.services[s.type] || (this.services[s.type] = [])).push(s);
-          });
-        }
-      }
-    };
-
-    const regexDIDMethod = /^did:(\w+):/;
+    const parseDIDMethod = did => did.match(/^did:(\w+):/)[1].trim().toLowerCase();
     
     class DIDOperation {
       constructor (props){
@@ -70,7 +53,7 @@
         this.did = props.did;
         this.data = props.data;
         this.sent = props.sent;
-        this.method = (props.method || this.did.match(regexDIDMethod)[1]).trim().toLowerCase();
+        this.method = (props.method || parseDIDMethod(this.did));
         var spec = navigator.did.methods[this.method];
         if (!spec) throw `There is no matching entry for the '${this.method}' DID Method prefix`;
         DIDOperationManager.store(this);
@@ -100,10 +83,10 @@
         this.store(instance);
         return instance;
       },
-      async get (instance){
-        await storageOperation('DIDOperations', store => store.get(instance.id || instance));
+      async load (instance){
+        return await storageOperation('DIDOperations', store => store.get(instance.id || instance));
       },
-      async getAll (){
+      async loadAll (){
         return new Promise(resolve => {
           var ops = [];
           storageOperation('DIDOperations', store => store.openCursor().onsuccess = event => {
@@ -123,16 +106,90 @@
         storageOperation('DIDOperations', store => store.delete(instance.id || instance));
       }
     };
+
+  window.DID = class DID {
+    constructor(props){
+      this.id = props.id;
+      this.doc = props.doc;
+      this.keys = props.keys;
+      this.meta = props.meta || {};
+      if (!props.existent) {
+        this.existent = true;
+        this.save();
+      }
+    }
+    async save (){
+      DIDManager.set(this);
+      await storageOperation('DID', store => store.put(this));
+    }
+  }
+
+  class DIDManager {
+    constructor(){
+      this.dids = {};
+      this.ready = new Promise(resolve => {
+        storageOperation('DID', store => store.openCursor().onsuccess = event => {
+          var cursor = event.target.result;
+          if (cursor) {
+            this.dids[cursor.value.id] = new DID(cursor.value);
+            cursor.continue();
+          }
+          else resolve();
+        })
+      });
+    }
+    set (did){
+      this.dids[did.id] = did instanceof DID ? did : new DID(did);
+    }
+    async get (id){
+      var did = this.dids[id];
+      if (did) did instanceof DID ? did : this.dids[id] = new DID(did);
+      try {
+        did = await storageOperation('DID', store => store.get(id));
+        return this.dids[id] = new DID(did);
+      }
+      catch (e) { return e }
+    }
+    forEach (fn){
+      return this.ready.then(() => {
+        for (let id in this.dids) fn(this.dids[id]);
+      });
+    }
+    async count (){
+      var count = 0;
+      await this.ready.then(() => count = Object.keys(this.dids).length);
+      return count;
+    }
+  };
+
+  DIDManager = window.DIDManager = new DIDManager();
   
   /* Navigator.prototype.did */
   
     if (!navigator.did) {
+
+      const RESOLVER_ENDPOINT = 'http://localhost:3000/1.0/identifiers/';
+
+      class DIDResult {
+        constructor (did, src){
+          this.did = did;
+          this.resolverData = src;
+          this.document = src.didDocument;
+          this.services = {};
+          if (this.document.service) {
+            // Spec technically allows for an object, which this normalizes
+            (Array.isArray(this.document.service) ? this.document.service : [this.document.service]).forEach(s => {
+              (this.services[s.type] || (this.services[s.type] = [])).push(s);
+            });
+          }
+        }
+      };
   
       Navigator.prototype.did = {
         methods: {
           'test': {
             resolve (did) {
-              return fetch('beta.discovery.did.microsoft.com/api/1.0/read/' + did, {
+              return fetch('https://beta.discover.did.microsoft.com/1.0/identifiers/' + did, {
                 mode: 'cors',
                 method: 'GET',
                 credentials: 'include',
@@ -163,10 +220,14 @@
           }
         },
         async lookup (did){
-          return fetch(RESOLVER_ENDPOINT + did)
-            .then(response => response.json())
-            .then(json => result = new DIDResult(did, json))
-            .catch(e => console.log(e));
+          var spec = navigator.did.methods[parseDIDMethod(did)];
+          if (spec) {
+            if (spec.resolve) return spec.resolve(did);
+            else return fetch(RESOLVER_ENDPOINT + did)
+              .then(response => response.json())
+              .then(json => result = new DIDResult(did, json))
+              .catch(e => console.log(e));
+          }
         },
         async requestDID (){
           var did = (prompt('Please enter a DID') || '').trim()

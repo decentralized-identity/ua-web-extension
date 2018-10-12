@@ -152,7 +152,6 @@ x-views > * > h3 {
 
 #did_list {
   list-style: none;
-  padding: 0;
   margin: 0;
 }
 
@@ -172,6 +171,7 @@ x-views > * > h3 {
   #did_list li svg:first-child {
     margin: 1em 1.1em 1em 0.85em;
     height: 3em;
+    width: auto;
     background: #fff;
     box-shadow: 0 1px 2px 0px rgba(0,0,0,0.2);
   }
@@ -196,4 +196,17 @@ x-views > * > h3 {
 
 #create_did form {
   padding: 1em;
+}
+
+@media all and (min-width: 700px) {
+
+  x-views > section > ul {
+    padding: 4em;
+  }
+
+  x-views > section > ul > li {
+    margin: auto;
+    max-width: 650px;
+  }
+
 }

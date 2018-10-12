@@ -134,7 +134,13 @@ x-notifier > figure > p:empty {
   margin: 0;
 }
 
-x-action-button {
+x-action {
+  display: inline;
+  cursor: pointer;
+}
+
+x-action[type="button"] {
+  display: block;
   position: fixed;
   bottom: 0;
   right: 0;
@@ -146,16 +152,14 @@ x-action-button {
   font-weight: bold;
   text-align: center;
   line-height: 1.75em;
-  vertical-align: middle;
   background: #ddd;
-  cursor: pointer;
 }
 
-x-action-button:before:empty {
+x-action[type="button"]:before:empty {
   content: "+";
   display: inline-block;
 }
 
-x-action-button:active {
+x-action[type="button"]:active {
   background: #f0f0f0;
 }
