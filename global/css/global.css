@@ -151,6 +151,24 @@ x-modal > section {
     color: #e10000;
   }
 
+  .did-list input[type="radio"] {
+    display: none;
+  }
+
+  .did-list input[type="radio"] + span {
+    height: 1.1em;
+    width: 1.1em;
+    margin: 0 0.5em 0 1.5em;
+    background: rgba(255,255,255,0.5);
+    border-radius: 100%;
+    border: 0.4em solid rgba(255,255,255,0.5);
+    box-shadow: 0 1px 2px 0px rgba(0,0,0,0.3);
+  }
+
+  .did-list input[type="radio"]:checked + span {
+    background: var(--active-ui);
+  }
+
 #svg {
   display: none;
 }

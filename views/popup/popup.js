@@ -14,7 +14,7 @@ const viewSetup = {
   async picker (){
 
     window.addEventListener('blur', e => {
-      //window.close()
+      window.close()
     });
 
     picker_list.addEventListener('submit', e => {
@@ -29,7 +29,7 @@ const viewSetup = {
 
     var content = '';
     await DIDManager.forEach(did => {
-      content += `<label><input type="radio" name="did" value="${did.id}" /><div><svg data-jdenticon-value="${did.id}"><svg/></div><span>${did.meta.display_name || did.id}</span></label>`;
+      content += `<label><input type="radio" name="did" value="${did.id}" /><span></span><div><svg data-jdenticon-value="${did.id}"><svg/></div><span>${did.meta.display_name || did.id}</span></label>`;
     });
     picker_list.innerHTML = content;
     jdenticon.update('#picker_list [data-jdenticon-value]');
