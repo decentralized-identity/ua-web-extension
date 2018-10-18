@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "name": "DID User Agent",
   "version": "0.0.1",
+  "author": "Daniel Buchner",
   "homepage_url": "https://github.com/deccentralized-identity/clients/ua-extension",
   "icons": {
     "48": "global/images/user-icon-48.png"
@@ -14,12 +15,18 @@
     "unlimitedStorage",
     "tabs",
     "activeTab",
+    "webNavigation",
     "webRequest",
     "webRequestBlocking",
     "<all_urls>"
   ],
+
+  "web_accessible_resources": [
+    "global/fonts/*"
+  ],
   
   "background": {
+    "persistent": true,
     "scripts": [
       "global/js/browser-polyfill.js",
       "global/js/did-polyfills.js",
@@ -30,8 +37,7 @@
 
   "browser_action": {
     "default_icon": "global/images/user-icon-32.png",
-    "default_title": "DID User Agent",
-    "default_popup": "views/popup/popup.html"
+    "default_title": "DID User Agent"
   },
 
   "content_scripts": [
@@ -40,7 +46,7 @@
       "match_about_blank": true,
       "matches": ["<all_urls>"],
       "run_at": "document_start",
-      "js": ["global/js/browser-polyfill.js", "global/js/did-polyfills.js", "global/js/content.js"]
+      "js": ["global/js/browser-polyfill.js", "global/js/did-polyfills.js", "global/js/setup.js", "global/js/content.js"]
     }
   ]
 

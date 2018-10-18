@@ -9,7 +9,6 @@
 document.addEventListener('action', e => {
   switch (e.detail) {
     case 'new_did':
-      console.log(e);
       create_did.show();
       break;
   }
@@ -58,17 +57,15 @@ function getCamImage(fn) {
   var timer;
   var notifier = document.getElementById('notifier');
 
-  qrcode.callback = function(data){
+  qrcode.callback = async function(data){
     if (data.includes('error')) {
 
     }
     else {
       var did = data.trim();
-      if (did.startsWith('did:') && !User.dids[did]) {
-        EXT.setDID(did, { user: true }).then(() => {
-          console.log('DID saved! --> ' + did);
-          notifier.show('New DID added', { body: did });
-        });
+      if (did.startsWith('did:') && await DIDManager.get(did)) {
+        new DID({ id: did });
+        notifier.show('New DID added', { body: did });
       }
     }
   }
@@ -116,13 +113,14 @@ create_did.addEventListener('submit', async e => {
     }
   });
   op.send().then(res => {
-    new DID({
+    var did = new DID({
       id: res.did,
+      keys: [keys],
       meta: { display_name: e.target.elements.display_name.value  }
     });
+    renderDIDChange('add', did.id);
     notifier.show('DID Created!', { body: res.did });
-    renderDIDChange();
-
+    create_did.hide();
   }).catch(e => {
     notifier.show('DID creation failed', { type: 'error', body: e.toString() })
   });
@@ -137,25 +135,43 @@ updateDIDCount = async function(){
   for (let node of nodes) node.setAttribute(DIDCountAttr, count);
 }
 
-async function renderDIDChange(){
+async function renderDIDChange(op, id){
   /* Dashboard */
 
   updateDIDCount();
+
   /* DID List */
 
-  var content = '';
-  await DIDManager.forEach(did => {
-    content += `<li><svg data-jdenticon-value="${did.id}"><svg/><span>${did.meta.display_name || did.id}</span><div delete-did="${did.id}">⨯</div></li>`;
-  })
-  did_list.innerHTML = content;
-  jdenticon.update('#did_list [data-jdenticon-value]');
+  if (op == 'add') {
+    var did = await DIDManager.get(id);
+    var li = document.createElement('li');
+    li.setAttribute('did', id);
+    li.innerHTML = `<div><svg data-jdenticon-value="${id}"><svg/></div><span>${did.meta.display_name || id}</span><div delete-did="${id}">⨯</div>`;
+    did_list.appendChild(li);
+    jdenticon.update(`[did="${id}"] [data-jdenticon-value]`);
+  }
+  else if (op == 'delete') {
+    Array.from(document.querySelectorAll(`[did="${id}"]`)).forEach(node => {
+      node.parentNode.removeChild(node);
+    });
+  }
+  else {  
+    var content = '';
+    await DIDManager.forEach(did => {
+      content += `<li did="${did.id}"><div><svg data-jdenticon-value="${did.id}"><svg/></div><span>${did.meta.display_name || did.id}</span><div delete-did="${did.id}">⨯</div></li>`;
+    });
+    did_list.innerHTML = content;
+    jdenticon.update('#did_list [data-jdenticon-value]');
+  }
 }
 
 
-window.addEventListener('userdidchange', renderDIDChange);
+window.addEventListener('didchanged', renderDIDChange);
 
 xtag.addEvent(document, 'click:delegate([delete-did])', function(e){
-  EXT.deleteDID(this.getAttribute('delete-did')).then(() => {
+  var id = this.getAttribute('delete-did');
+  DIDManager.delete(id).then(() => {
+    renderDIDChange('remove', id);
     notifier.show('DID removed', { body: this.getAttribute('delete-did') });
   });
 });

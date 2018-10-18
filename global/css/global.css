@@ -1,5 +1,4 @@
 
-
 :root {
   --dark-bk: #2b333e;
   --grey-bk: #e1e2e3;
@@ -7,7 +6,8 @@
   --dark-title: #4f5967;
   --inactive-ui: #004085;
   --active-ui: #0077d7;
-  font-size: calc(0.8em + 0.4vmin);
+  font-family: 'Segoe UI', arial, sans-serif;
+  font-size: calc(0.9em + var(--font-factor) + 0.2vmin);
 }
 
 h3 {
@@ -22,7 +22,7 @@ svg {
 
 button[styled], [type="button"][styled] {
   display: inline-block;
-  padding: 0.4em 0.75em 0.35em;
+  padding: 0.6em 1.2em;
   color: #fff;
   background: var(--active-ui);
   border: none;
@@ -117,6 +117,39 @@ x-modal > section {
 [did-count]:before {
   content: attr(did-count);
 }
+
+.did-list {
+  list-style: none;
+  margin: 0;
+}
+
+.did-list > * {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #eee;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .did-list > *:nth-child(even) {
+    background: #f0f0f0;
+  }
+
+  .did-list > * svg:first-child {
+    margin: 1em 1.1em 1em 0.85em;
+    height: 3em;
+    width: auto;
+    background: #fff;
+    box-shadow: 0 1px 2px 0px rgba(0,0,0,0.2);
+  }
+
+  .did-list [delete-did] {
+    font-size: 2em;
+    padding: 0.5em;
+    margin-left: auto;
+    color: #e10000;
+  }
 
 #svg {
   display: none;

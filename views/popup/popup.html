@@ -3,14 +3,16 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <title>Disclose a DID to login</title>
     <link rel="stylesheet" href="/components/components.css"/>
     <link rel="stylesheet" href="/global/css/global.css"/>
     <link rel="stylesheet" href="popup.css"/>
+    <script src="/global/js/views.js"></script>
   </head>
 
 <body>
   
-<x-views view="default_view">
+<x-views id="views" view="default_view">
 
   <section id="default_view">
     <header noflex>
@@ -20,13 +22,13 @@
     <ul id="recent_activity_list"></ul>
   </section>
 
-  <section id="did_picker">
+  <section id="picker">
     <header>
       <h2>Choose a DID for this activity</h2>
     </header>
-    <ul id="did_list"></ul>
+    <form id="picker_list" class="did-list"></form>
     <footer>
-      <button type="button" styled>Select</button>
+      <button form="picker_list" styled>Select</button>
     </footer>
   </section>
 
@@ -51,6 +53,7 @@
 
   <script src="/global/js/url-search-params.js"></script>
   <script src="/global/js/browser-polyfill.js"></script>
+  <script src="/global/js/did-polyfills.js"></script>
   <script src="/global/js/avatar.js"></script>
   <script src="/global/js/setup.js"></script>
   <script src="/components/x-tag-polyfilled.js"></script>

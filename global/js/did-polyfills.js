@@ -42,6 +42,27 @@
       })
     }
 
+    function iterateStorage(name, fn){
+      return new Promise(resolve => {
+        storageOperation(name, store => store.openCursor().onsuccess = event => {
+          var cursor = event.target.result;
+          if (cursor) {
+            fn(cursor.value);
+            cursor.continue();
+          }
+          else resolve();
+        });
+      });
+    }
+
+    function fireEvent (target, name, options = {}){
+      target.dispatchEvent(new CustomEvent(name, {
+        bubbles: options.bubbles === true,
+        cancelable: options.cancelable === true,
+        detail: options.detail
+      }));
+    }
+
   /* DID Registry & Operations */
 
     const parseDIDMethod = did => did.match(/^did:(\w+):/)[1].trim().toLowerCase();
@@ -87,17 +108,11 @@
         return await storageOperation('DIDOperations', store => store.get(instance.id || instance));
       },
       async loadAll (){
-        return new Promise(resolve => {
-          var ops = [];
-          storageOperation('DIDOperations', store => store.openCursor().onsuccess = event => {
-            var cursor = event.target.result;
-            if (cursor) {
-              ops.push(cursor.value);
-              cursor.continue();
-            }
-            else resolve(ops);
-          });
+        var ops = [];
+        await iterateStorage('DIDOperations', op => {
+          ops.push(op);
         });
+        return ops;
       },
       store (instance){
         storageOperation('DIDOperations', store => store.put(instance));
@@ -116,6 +131,7 @@
       if (!props.existent) {
         this.existent = true;
         this.save();
+        fireEvent(window, 'didcreate', { details: this });
       }
     }
     async save (){
@@ -124,41 +140,47 @@
     }
   }
 
+  function countDIDs(mgr){
+    return mgr._count = Object.keys(mgr.dids).length
+  }
+
   class DIDManager {
     constructor(){
       this.dids = {};
-      this.ready = new Promise(resolve => {
-        storageOperation('DID', store => store.openCursor().onsuccess = event => {
-          var cursor = event.target.result;
-          if (cursor) {
-            this.dids[cursor.value.id] = new DID(cursor.value);
-            cursor.continue();
-          }
-          else resolve();
-        })
-      });
+      this.ready = iterateStorage('DID', obj => {
+        this.dids[obj.id] = new DID(obj);
+      }).then(() => {
+        countDIDs(this)
+      })
+      window.addEventListener('didcreate', event => this.count(true));
     }
     set (did){
       this.dids[did.id] = did instanceof DID ? did : new DID(did);
     }
     async get (id){
-      var did = this.dids[id];
-      if (did) did instanceof DID ? did : this.dids[id] = new DID(did);
-      try {
-        did = await storageOperation('DID', store => store.get(id));
-        return this.dids[id] = new DID(did);
-      }
-      catch (e) { return e }
+      return await this.ready.then(() => this.dids[id]);
+    }
+    async delete (did){
+      var id = did.id || did;
+      var instance = this.dids[id];
+      delete this.dids[id];
+      await Promise.all(instance.keys.map(key => keyStore.delete(key.hash)));
+      await storageOperation('DID', store => store.delete(id));
+      await this.count(true);
+    }
+    async clear (){
+      this.dids = {};
+      await storageOperation('DID', store => store.clear());
+      await this.count(true);
     }
     forEach (fn){
       return this.ready.then(() => {
-        for (let id in this.dids) fn(this.dids[id]);
+        var index = 0;
+        for (let id in this.dids) fn(this.dids[id], index++);
       });
     }
-    async count (){
-      var count = 0;
-      await this.ready.then(() => count = Object.keys(this.dids).length);
-      return count;
+    async count (recount){
+      return await this.ready.then(() => recount ? countDIDs(this) : this._count);
     }
   };
 
@@ -233,6 +255,9 @@
           var did = (prompt('Please enter a DID') || '').trim()
           if (did.match('did:')) return did;
           throw 'No DID provided';
+        },
+        onassert (){
+
         }
       };
 

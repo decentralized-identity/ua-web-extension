@@ -150,7 +150,7 @@ x-views > * > h3 {
   font-weight: bold;
 }
 
-#did_list {
+/* #did_list {
   list-style: none;
   margin: 0;
 }
@@ -182,7 +182,7 @@ x-views > * > h3 {
     margin-left: auto;
     color: #e10000;
     cursor: pointer;
-  }
+  } */
 
 #did_scanner {
   width: 80vh;
