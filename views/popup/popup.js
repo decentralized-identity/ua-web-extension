@@ -8,13 +8,15 @@
 //   return Promise.resolve({response: "Hi from content script"});
 // });
 
+console.log(location.protocol);
+
 const params = new URLSearchParams(window.location.search);
 const view = params.get('view');
 const viewSetup = {
   async picker (){
 
     window.addEventListener('blur', e => {
-      window.close()
+      //window.close()
     });
 
     picker_list.addEventListener('submit', e => {

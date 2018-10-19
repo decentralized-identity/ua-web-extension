@@ -9,7 +9,6 @@ EXT.ready.then(() => {
     Did-User: the user owns one or more DIDs
 */
 
-  EXT.attachProtocols();
 
   async function modifyHeader(e) {
     e.requestHeaders['DID-Support'] = 1;

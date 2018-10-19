@@ -167,11 +167,16 @@
       </form>
     </section>
     
-    <a href="did:test:9ajld2drlvwkr3r7rvlp3um0xd0wkq">DID Link</a>
-    <a href="did-auth:jose">DID Auth</a>
+    <!-- <a href="did:test:9ajld2drlvwkr3r7rvlp3um0xd0wkq">DID Link</a>
+      <br/>
     <a href="hub://did:test:9ajld2drlvwkr3r7rvlp3um0xd0wkq">Hub Link</a>
-    <form action="did-auth:jose"><input type="submit" value="Hub Link" /></form>
-  <!-- <a href="extension:reload">Reload Extension</a> -->
+      <br/> -->
+      
+    <form action="did-auth:jose://test.com/foo">
+      <input type="submit" value="Login with DID"/>
+    </form>
+
+    <!-- <a href="extension:reload">Reload Extension</a> -->
 
   </main>
 

@@ -4,19 +4,11 @@ if (typeof EXT === 'undefined') (function(){
 browser = typeof browser === 'undefined' ? chrome : browser;
 var storage = browser.storage.local;
 var runtimeEvents = {};
-
-browser.runtime.onMessage.addListener((obj, sender) => {
-  var events = runtimeEvents[sender.tab.id];
-  if (events[obj.event]) {
-    events[obj.event] = events[obj.event].filter(fn => {
-      fn(obj.value);
-      return false;
-    })
-  }
-});
+var inBackground = browser.extension.getBackgroundPage && window == browser.extension.getBackgroundPage();
 
 EXT = {
-  ready: [],
+  ready: [DIDManager.ready],
+  env: inBackground ? 'background' : location.protocol.match('-extension:') ? 'extension' : 'content',
   storage: {
     get (...keys){
       return storage.get(keys);
@@ -41,9 +33,7 @@ EXT = {
       trigger: resolve => {
         const parseProtocol = did => did.match(/^([^:]+)/)[0];
         window.addEventListener('submit', e => {
-          
           var uri = e.target.action;
-          console.log(uri);
           if (parseProtocol(uri || '') == 'did-auth') {
             e.preventDefault();
             e.cancelBubble = true;
@@ -66,25 +56,13 @@ EXT = {
       }
     }
   },
-  attachProtocols () {
-    if (browser.extension.getBackgroundPage && window == browser.extension.getBackgroundPage()) {
-      browser.runtime.onConnect.addListener(port => {
-        var protocol = EXT.protocols[port.name];
-        if (protocol) port.onMessage.addListener(protocol.handler);
-      });
-    }
-    else {
-      for (let z in EXT.protocols) {
-        let port = browser.runtime.connect({ name: z });
-        EXT.protocols[z].trigger(msg => {
-          port.postMessage(msg);
-        });
-      }
-    }
-  },
-  addEvent(id, type, fn){
-    var events = (runtimeEvents[id] || (runtimeEvents[id] = {}));
+  addEvent(tabId, type, fn){
+    var events = (runtimeEvents[tabId] || (runtimeEvents[tabId] = {}));
     (events[type] || (events[type] = [])).push(fn);
+  },
+  removeEvent(tabId, type, fn){
+    var events = runtimeEvents[tabId];
+    if (events[type]) events[type] = events[type].filter(listener => listener !== fn)
   },
   fireEvent(type, value){
     browser.runtime.sendMessage({
@@ -111,23 +89,45 @@ EXT = {
   }
 };
 
-// EXT.registerProtocol('did', e => {
+if (EXT.env == 'background') {
+  browser.runtime.onConnect.addListener(port => {
+    var protocol = EXT.protocols[port.name];
+    if (protocol) port.onMessage.addListener(protocol.handler);
+  });
+  // Listen for tabs sending back event-coded messages, and call any matching listeners we have
+  browser.runtime.onMessage.addListener((obj, sender) => {
+    var events = runtimeEvents[sender.tab.id];
+    if (events[obj.event]) {
+      events[obj.event].forEach(fn => fn(obj.value));
+    }
+  });
+  // Clean up events from destroyed windows to prevent memory leaks
+  browser.tabs.onRemoved.addListener(tabId => {
+    delete runtimeEvents[tabId];
+  });
+}
+else if (EXT.env == 'content') {
+  for (let z in EXT.protocols) {
+    let port = browser.runtime.connect({ name: z });
+    EXT.protocols[z].trigger(msg => {
+      port.postMessage(msg);
+    });
+  }
+}
+
+// Protocol 'did'
 //   browser.tabs.update(sender.tab.id, {
 //     url: browser.extension.getURL('views/profile/profile.html?url=') + msg.url
 //   }).then(val => {
 //     console.log(val);
 //   }).catch(e => console.log(e));
-// });
 
-// EXT.registerProtocol('hub', e => {
+// Protocol 'hub'
 //   browser.tabs.update(sender.tab.id, {
 //     url: browser.extension.getURL('views/profile/profile.html?url=') + msg.url
 //   }).then(val => {
 //     console.log(val);
 //   }).catch(e => console.log(e));
-// });
-
-EXT.ready.push(DIDManager.ready);
 
 EXT.ready = Promise.all(EXT.ready);
 

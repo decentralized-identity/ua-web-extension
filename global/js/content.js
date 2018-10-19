@@ -21,5 +21,3 @@
 //   })
 // }, true);
 
-// this = incoming port
-EXT.attachProtocols();
