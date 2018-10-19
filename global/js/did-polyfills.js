@@ -257,7 +257,7 @@
           throw 'No DID provided';
         },
         onassert (){
-
+          
         }
       };
 

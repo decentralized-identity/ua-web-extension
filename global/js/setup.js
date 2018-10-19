@@ -37,7 +37,7 @@ EXT = {
           if (parseProtocol(uri || '') == 'did-auth') {
             e.preventDefault();
             e.cancelBubble = true;
-            resolve({ uri: uri,  origin: location.hostname || location.origin });
+            resolve({ uri: uri,  origin: location.hostname || location.origin, offset: { x: screenX, y: screenY, h: outerHeight, w: outerWidth } });
           }
         }, true);
       },
@@ -48,6 +48,7 @@ EXT = {
           EXT.popup({
             view: 'picker',
             activity: 'pick-did',
+            offset: response.offset,
             callback: function(did) {
               console.log(response.uri, did);
             }
@@ -73,15 +74,21 @@ EXT = {
   async popup(props = {}){
     var width = props.width || 400;
     var height = props.height || 500;
+    var centered = props.centered !== false;
     var win = await browser.windows.getCurrent();
-    var popup = await browser.windows.create({
+    var x = Math.round(win.left + ((win.width / 2) - (width / 2)))
+    var y = Math.round(win.top + ((win.height / 2) - (height / 2)));
+    var options = {
       type: 'popup',
       width: width,
       height: height,
-      left: Math.round(((win.width / 2) + win.left) - width / 2),
-      top: Math.round(((win.height / 2) + win.top) - height / 2),
-      url: browser.extension.getURL(`views/popup/popup.html?view=${props.view || 'default_view'}&activity=${props.activity}`)
-    });
+      url: browser.extension.getURL(`views/popup/popup.html?view=${props.view || 'default_view'}&activity=${props.activity}&centered=${centered}&offsetX=${x}&offsetY=${y}`)
+    };
+    if (centered) {
+      options.left = x;
+      options.top = y;
+    }
+    var popup = await browser.windows.create(options);
     if (props.callback && props.activity) {
       EXT.addEvent(popup.tabs[0].id, props.activity, props.callback);
     }

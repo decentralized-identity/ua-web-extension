@@ -2,16 +2,16 @@
 
 (function(){
 
-// const events = {};
-// browser.runtime.onMessage.addListener(obj => {
-//   if (obj.event) 
-//   return Promise.resolve({response: "Hi from content script"});
-// });
-
-console.log(location.protocol);
-
 const params = new URLSearchParams(window.location.search);
+const centered = params.get('centered');
 const view = params.get('view');
+
+if (centered && location.protocol == 'ms-browser-extension:') {
+  var x = Number(params.get('offsetX'));
+  var y = Number(params.get('offsetY'));
+  moveTo(x, y);
+}
+
 const viewSetup = {
   async picker (){
 

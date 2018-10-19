@@ -10,6 +10,12 @@
     "48": "global/images/user-icon-48.png"
   },
 
+  "browser_specific_settings": {
+    "edge": {
+      "browser_action_next_to_addressbar": true
+    }
+  },
+
   "permissions": [
     "storage",
     "unlimitedStorage",
