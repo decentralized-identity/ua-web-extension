@@ -54,9 +54,8 @@ function hex(buffer) {
 
 function storageOperation(fn) {
 	var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-	var init = indexedDB.open('keyStore', 1);
   return new Promise((resolve, reject) => {
-    
+    var init = indexedDB.open('keyStore', 1);
     init.onerror = e => reject(e);
     init.onupgradeneeded = () => {
       var store = init.result.createObjectStore('entries', {keyPath: 'hash'});
@@ -78,7 +77,7 @@ function storageOperation(fn) {
 
 function save(entry) { return storageOperation(async store => await store.put(entry)) }
 function _delete(hash) { return storageOperation(async store => await store.delete(hash)) }
-function clear(entry) { return storageOperation(async store => await store.clear()) }
+function clear() { return storageOperation(async store => await store.clear()) }
 
 function encrypt(data, keys) {
   return window.crypto.subtle.encrypt(

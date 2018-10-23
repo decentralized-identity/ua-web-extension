@@ -24,6 +24,7 @@ x-view-menu {
 
 x-view-menu > * {
   position: relative;
+  outline: none;
 }
 
 x-view-menu > [view] {
@@ -40,8 +41,13 @@ x-view-menu > [view] > * {
   transition: opacity 0.25s ease;
 }
 
-x-view-menu > [view]:not([selected]):hover > * {
+x-view-menu > [view]:not([selected]):hover > *,
+x-view-menu > [view]:not([selected]):focus > * {
   opacity: 0.7;
+}
+
+x-view-menu > *:focus:not(:active):not([selected]) {
+  background: radial-gradient(rgba(var(--active-rgb), 0.3), transparent);
 }
 
 x-view-menu > [selected] > * {
@@ -55,7 +61,7 @@ x-view-menu > [selected]:after {
   left: 0;
   height: 60%;
   width: 0.3em;
-  background: var(--active-ui);
+  background: var(--active);
 }
 
 x-view-menu svg,
@@ -124,7 +130,7 @@ x-views > * > h3 {
   position: relative;
   height: 4.5em;
   padding: 0;
-  background: var(--active-ui);
+  background: var(--active);
   box-shadow: 0 0px 2px 1px rgba(0,0,0,0.75);
 }
 
@@ -135,6 +141,22 @@ x-views > * > h3 {
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+#dashboard_search {
+  width: 40%;
+  max-width: 20em;
+  font-size: 1.2em;
+  padding: 0.2em 0.2em 0.1em;
+  height: 50%;
+}
+
+#dashboard_search_button {
+  height: 50%;
+}
+
+#dashboard_search_button svg {
+  height: 100%;
+}
 
 #dashboard_counts {
   text-align: center;

@@ -24,8 +24,8 @@
 
     function storageOperation(name, fn) {
       var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-      var init = indexedDB.open(name, 1);
       return new Promise((resolve, reject) => {
+        var init = indexedDB.open(name, 1);
         init.onerror = e => reject(e);
         init.onupgradeneeded = () => init.result.createObjectStore('entries', {keyPath: 'id'});
         init.onsuccess = async () => {

@@ -37,7 +37,7 @@ EXT = {
           if (parseProtocol(uri || '') == 'did-auth') {
             e.preventDefault();
             e.cancelBubble = true;
-            resolve({ uri: uri,  origin: location.hostname || location.origin, offset: { x: screenX, y: screenY, h: outerHeight, w: outerWidth } });
+            resolve({ uri: uri,  origin: location.hostname || location.origin });
           }
         }, true);
       },
@@ -48,7 +48,6 @@ EXT = {
           EXT.popup({
             view: 'picker',
             activity: 'pick-did',
-            offset: response.offset,
             callback: function(did) {
               console.log(response.uri, did);
             }

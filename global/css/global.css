@@ -5,7 +5,9 @@
   --dark-header: #343c48;
   --dark-title: #4f5967;
   --inactive-ui: #004085;
-  --active-ui: #0077d7;
+  --active-rgb: 0, 119, 215;
+  --active: rgb(var(--active-rgb));
+  --active-light: #66baff;
   font-family: 'Segoe UI', arial, sans-serif;
   font-size: calc(0.9em + var(--font-factor) + 0.2vmin);
 }
@@ -20,15 +22,24 @@ svg {
   vertical-align: middle;
 }
 
+button {
+  cursor: pointer;
+}
+
 button[styled], [type="button"][styled] {
   display: inline-block;
   padding: 0.6em 1.2em;
   color: #fff;
-  background: var(--active-ui);
+  background: var(--active);
   border: none;
   border-radius: 0.2em;
   box-shadow: 0 -2px 1px -1px rgba(0,0,0,0.5) inset;
   cursor: pointer;
+}
+
+button[type="icon"] {
+  background: none;
+  border: none;
 }
 
 x-views > * > header {
@@ -55,7 +66,7 @@ x-action[type="button"] {
   box-shadow: 0 1px 1px 1px rgba(0,0,0,0.35);
 }
 x-action[type="button"]:active {
-  background: var(--active-ui);
+  background: var(--active);
 }
 
 x-modal section {
@@ -128,7 +139,8 @@ x-modal > section {
     display: flex;
     align-items: center;
     background: #eee;
-    border-bottom: 1px solid #ccc;
+    margin: 1em auto;
+    box-shadow: 0 1px 1px -1px rgba(0,0,0,0.3);
     cursor: pointer;
   }
 
@@ -151,6 +163,10 @@ x-modal > section {
     color: #e10000;
   }
 
+  .did-list [delete-did]:hover {
+    background: #ffe7e7;
+  }
+
   .did-list input[type="radio"] {
     display: none;
   }
@@ -166,9 +182,18 @@ x-modal > section {
   }
 
   .did-list input[type="radio"]:checked + span {
-    background: var(--active-ui);
+    background: var(--active);
   }
 
 #svg {
   display: none;
+}
+
+
+@media all and (max-width: 700px) {
+  .did-list > * {
+    margin: auto;
+    box-shadow: none;
+    border-bottom: 1px solid #ccc;
+  }
 }

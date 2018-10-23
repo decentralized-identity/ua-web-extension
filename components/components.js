@@ -2,6 +2,9 @@
 
 (function(){
 
+// xtag.events.active = {
+//   attach: ['activate', 'DOMActivate']
+// };
 
 xtag.create('x-views', class extends XTagElement {
   set 'view::attr' (id){
@@ -28,7 +31,11 @@ xtag.create('x-view-menu', class extends XTagElement {
     var selected = this.querySelector('x-view-menu [selected]');
     if (selected) selectMenuItem(this, selected);
   }
+  // 'active::event:delegate(x-view-menu > [view])'(event){
+  //   console.log(event);
+  // }
   'click::event:delegate(x-view-menu > [view])'(event){
+    console.log(event);
     selectMenuItem(event.currentTarget, this);
   }
 });
